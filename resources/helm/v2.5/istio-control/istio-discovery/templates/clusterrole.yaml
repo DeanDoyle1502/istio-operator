@@ -4,13 +4,23 @@ kind: ClusterRole
 metadata:
   name: istiod-clusterrole-{{ .Values.revision | default "default" }}-{{ .Release.Namespace }}
   labels:
-    maistra-version: "2.5.1"
+    maistra-version: "2.5.2"
     app: istiod
     release: {{ .Release.Name }}
 rules:
   # sidecar injection controller
+{{ if .Values.global.clusterWide }}
+  - apiGroups: ["admissionregistration.k8s.io"]
+    resources: ["mutatingwebhookconfigurations"]
+    verbs: ["get", "list", "watch", "update", "patch"]
+{{ end }}
 
   # configuration validation webhook controller
+{{ if .Values.global.clusterWide }}
+  - apiGroups: ["admissionregistration.k8s.io"]
+    resources: ["validatingwebhookconfigurations"]
+    verbs: ["get", "list", "watch", "update"]
+{{ end }}
 
   # istio configuration
   # removing CRD permissions can break older versions of Istio running alongside this control plane (https://github.com/istio/istio/issues/29382)
@@ -126,7 +136,7 @@ kind: ClusterRole
 metadata:
   name: istiod-gateway-controller-{{ .Values.revision | default "default" }}-{{ .Release.Namespace }}
   labels:
-    maistra-version: "2.5.1"
+    maistra-version: "2.5.2"
     app: istiod
     release: {{ .Release.Name }}
 rules:
