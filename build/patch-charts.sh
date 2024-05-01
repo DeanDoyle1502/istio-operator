@@ -171,8 +171,10 @@ function patchGalley() {
   sed_wrap -i -e '/- apiGroups:.*authentication\.k8s\.io/,/verbs:/ d' "${HELM_DIR}/istio-control/istio-discovery/templates/clusterrole.yaml"
 
   # remove istiod-reader ClusterRole and ClusterRoleBindings
+
  # rm "${HELM_DIR}/istio-control/istio-discovery/templates/reader-clusterrole.yaml"
  # rm "${HELM_DIR}/istio-control/istio-discovery/templates/reader-clusterrolebinding.yaml"
+
 
   convertClusterRoleBinding "${HELM_DIR}/istio-control/istio-discovery/templates/clusterrolebinding.yaml" ""
   sed_wrap -i -e '/- "discovery"/ a\
@@ -512,7 +514,7 @@ function removeUnsupportedCharts() {
   echo "removing unsupported Helm charts"
   rm -rf "${HELM_DIR}/istio-cni"
   rm -rf "${HELM_DIR}/istiocoredns"
-  rm -rf "${HELM_DIR}/istiod-remote"
+ # rm -rf "${HELM_DIR}/istiod-remote"
   rm -rf "${HELM_DIR}/istio-operator"
   rm -rf "${HELM_DIR}/ztunnel"
 }
