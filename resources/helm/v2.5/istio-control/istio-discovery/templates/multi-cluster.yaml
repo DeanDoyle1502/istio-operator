@@ -1,13 +1,18 @@
-# Source: istiod/templates/serviceaccount.yaml
+# Source: istiod-remote/templates/reader-serviceaccount.yaml
 apiVersion: v1
 kind: ServiceAccount
+  {{- if .Values.global.imagePullSecrets }}
+imagePullSecrets:
+  {{- range .Values.global.imagePullSecrets }}
+  - name: {{ . }}
+    {{- end }}
+    {{- end }}
 metadata:
-  name: istiod
-  namespace: istio-system
+  name: istio-reader-service-account
+  namespace: {{ .Values.global.istioNamespace }}
   labels:
-    maistra-version: "2.4.7"
-    app: istiod
-    release: istio
+    app: istio-reader
+    release: {{ .Release.Name }}
 ---
 
 # Source: istiod/templates/reader-clusterrole.yaml
