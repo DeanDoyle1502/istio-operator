@@ -9,7 +9,7 @@ imagePullSecrets:
     {{- end }}
 metadata:
   name: istio-reader-service-account
-  namespace: {{ .Values.global.istioNamespace }}
+  namespace: {{ .Release.Namespace }}
   labels:
     maistra-version: "2.5.2"
     app: istiod
