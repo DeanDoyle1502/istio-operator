@@ -172,10 +172,10 @@ function patchGalley() {
 
   # reader-clusterrole and reader-clusterrolebinding added, if clusterWide and multiCluster mode enabled
   sed_wrap -i '1i\{{- if and .Values.global.clusterWide .Values.global.multiCluster.enabled }}' "${HELM_DIR}/istio-control/istio-discovery/templates/reader-clusterrole.yaml"  
-  sed_wrap -i '$a\{{- end }}' "${HELM_DIR}/istio-control/istio-discovery/templates/reader-clusterrole.yaml" 
+  sed_wrap -i '$ a\{{- end }}' "${HELM_DIR}/istio-control/istio-discovery/templates/reader-clusterrole.yaml" 
 
   sed_wrap -i '1i\{{- if and .Values.global.clusterWide .Values.global.multiCluster.enabled }}' "${HELM_DIR}/istio-control/istio-discovery/templates/reader-clusterrolebinding.yaml"  
-  sed_wrap -i '$a\{{- end }}' "${HELM_DIR}/istio-control/istio-discovery/templates/reader-clusterrolebinding.yaml"  
+  sed_wrap -i '$ a\{{- end }}' "${HELM_DIR}/istio-control/istio-discovery/templates/reader-clusterrolebinding.yaml"  
  
 
   convertClusterRoleBinding "${HELM_DIR}/istio-control/istio-discovery/templates/clusterrolebinding.yaml" ""

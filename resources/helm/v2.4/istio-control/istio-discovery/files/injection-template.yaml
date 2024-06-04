@@ -233,8 +233,8 @@ spec:
       {{- if .ProxyUID }}
       runAsGroup: {{ .ProxyUID }}
       {{- end }}
-      {{- if .ProxyUID }}
-      fsGroup: {{ .ProxyUID }}
+      {{- if .ProxyGID }}
+      fsGroup: {{ .ProxyGID }}
       {{- end }}
       runAsNonRoot: false
       runAsUser: 0
@@ -258,8 +258,8 @@ spec:
         - SETUID
       privileged: {{ .Values.global.proxy.privileged }}
       readOnlyRootFilesystem: {{ ne (annotation .ObjectMeta `sidecar.istio.io/enableCoreDump` .Values.global.proxy.enableCoreDump) "true" }}
-      {{- if .ProxyGID }}
-      runAsGroup: {{ .ProxyGID }}
+      {{- if .ProxyUID }}
+      runAsGroup: {{ .ProxyUID }}
       {{- end }}
       {{- if .ProxyGID }}
       fsGroup: {{ .ProxyGID }}
