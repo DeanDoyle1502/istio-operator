@@ -230,11 +230,11 @@ spec:
         - SETUID
       privileged: true
       readOnlyRootFilesystem: {{ ne (annotation .ObjectMeta `sidecar.istio.io/enableCoreDump` .Values.global.proxy.enableCoreDump) "true" }}
-      {{- if .ProxyGID }}
-      runAsGroup: {{ .ProxyGID }}
+      {{- if .ProxyUID }}
+      runAsGroup: {{ .ProxyUID }}
       {{- end }}
-      {{- if .ProxyGID }}
-      fsGroup: {{ .ProxyGID }}
+      {{- if .ProxyUID }}
+      fsGroup: {{ .ProxyUID }}
       {{- end }}
       runAsNonRoot: false
       runAsUser: 0
