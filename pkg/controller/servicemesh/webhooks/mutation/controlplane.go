@@ -93,6 +93,25 @@ func (v *ControlPlaneMutator) Handle(ctx context.Context, req admission.Request)
 		}
 	}
 
+	// removing tracing by default on creation of v2.6 SMCP
+	if req.AdmissionRequest.Operation == admissionv1beta1.Create {
+		newOpenShiftTracing := mutator.IsTracingTypeSpecified()
+
+		if !newOpenShiftTracing {
+			var ver versions.Version
+			var err error
+			// If version is not specified
+			if currentVersion == "" {
+				ver, err = versions.ParseVersion(mutator.DefaultVersion())
+			} else {
+				ver, err = versions.ParseVersion(currentVersion)
+			}
+			if err == nil && ver.AtLeast(versions.V2_6.Version()) {
+				mutator.SetTracingType(v2.TracerTypeNone)
+			}
+		}
+	}
+
 	if len(mutator.GetProfiles()) == 0 {
 		log.Info("Setting .spec.profiles to default value", "profiles", []string{v1.DefaultTemplate})
 		mutator.SetProfiles([]string{v1.DefaultTemplate})
@@ -169,6 +188,8 @@ type smcpmutator interface {
 	GetPatches() []jsonpatch.JsonPatchOperation
 	IsOpenShiftRouteEnabled() *bool
 	SetOpenShiftRouteEnabled(bool)
+	IsTracingTypeSpecified() bool
+	SetTracingType(v2.TracerType)
 }
 
 type smcppatch struct {
@@ -298,4 +319,20 @@ func (m *smcpv2mutator) SetOpenShiftRouteEnabled(value bool) {
 	route.Enablement = v2.Enablement{Enabled: &value}
 
 	m.patches = append(m.patches, jsonpatch.NewPatch("add", "/spec/gateways", *gateways))
+}
+
+func (m *smcpv1mutator) IsTracingTypeSpecified() bool {
+	return false
+}
+
+func (m *smcpv1mutator) SetTracingType(value v2.TracerType) {}
+
+func (m *smcpv2mutator) IsTracingTypeSpecified() bool {
+	tracing := m.smcp.Spec.Tracing
+
+	return !(tracing == nil || tracing.Type == "")
+}
+
+func (m *smcpv2mutator) SetTracingType(value v2.TracerType) {
+	m.patches = append(m.patches, jsonpatch.NewPatch("add", "/spec/tracing/type", string(value)))
 }
