@@ -84,6 +84,9 @@ func TestNoMutation(t *testing.T) {
 						},
 					},
 				}
+				controlPlane.Spec.Tracing = &maistrav2.TracingConfig{
+					Type: maistrav2.TracerTypeNone,
+				}
 				return controlPlane
 			},
 		},
@@ -98,6 +101,9 @@ func TestNoMutation(t *testing.T) {
 							Enabled: &featureEnabled,
 						},
 					},
+				}
+				controlPlane.Spec.Tracing = &maistrav2.TracingConfig{
+					Type: maistrav2.TracerTypeNone,
 				}
 				return controlPlane
 			},

@@ -37,6 +37,7 @@ var (
 					},
 				},
 			}),
+		jsonpatch.NewPatch("add", "/spec/tracing/type", string(v2.TracerTypeNone)),
 		jsonpatch.NewPatch("add", "/spec/profiles", []interface{}{v1.DefaultTemplate}),
 	)
 	acceptV1WithDefaultMutation = admission.Patched("",
