@@ -109,6 +109,17 @@ func TestNoMutation(t *testing.T) {
 			},
 		},
 		{
+			name: "no-mutation.v2 with tracing specified",
+			controlPlane: func() runtime.Object {
+				controlPlane := newControlPlaneV2("istio-system")
+				controlPlane.Spec.Version = versions.DefaultVersion.String()
+				controlPlane.Spec.Tracing = &maistrav2.TracingConfig{
+					Type: maistrav2.TracerTypeJaeger,
+				}
+				return controlPlane
+			},
+		},
+		{
 			name: "no-mutation.v2_4",
 			controlPlane: func() runtime.Object {
 				controlPlane := newControlPlaneV2("istio-system")
@@ -164,6 +175,15 @@ func TestUpgradingToV2_5(t *testing.T) {
 		mutator := createControlPlaneMutatorTestFixture()
 		response := mutator.Handle(ctx, newUpdateRequest(newControlPlaneV2_4("istio-system"), newControlPlaneV2("istio-system")))
 		assert.DeepEquals(response, acceptWithNoMutation, "Expected mutator to accept ServiceMeshControlPlane with no mutation", t)
+	})
+}
+
+// need to figure out how include the disabling of IOR but not set tracing type to none
+func TestUpgradingToV2_6(t *testing.T) {
+	t.Run("upgrading from v2_5 to default version", func(t *testing.T) {
+		mutator := createControlPlaneMutatorTestFixture()
+		response := mutator.Handle(ctx, newUpdateRequest(newControlplaneV2_5("istio-system"), newControlPlaneV2("istio-system")))
+		assert.DeepEquals(response, acceptWithNoMutation, "Expected mutator to accept ServieMeshControlPlane with no mutation", t)
 	})
 }
 
@@ -393,6 +413,19 @@ func newControlPlaneV2_4(namespace string) *maistrav2.ServiceMeshControlPlane {
 		},
 		Spec: maistrav2.ControlPlaneSpec{
 			Version:  versions.V2_4.String(),
+			Profiles: []string{maistrav1.DefaultTemplate},
+		},
+	}
+}
+
+func newControlplaneV2_5(namespace string) *maistrav2.ServiceMeshControlPlane {
+	return &maistrav2.ServiceMeshControlPlane{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      "my-smcp",
+			Namespace: namespace,
+		},
+		Spec: maistrav2.ControlPlaneSpec{
+			Version:  versions.V2_5.String(),
 			Profiles: []string{maistrav1.DefaultTemplate},
 		},
 	}
