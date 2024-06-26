@@ -334,5 +334,12 @@ func (m *smcpv2mutator) IsTracingTypeSpecified() bool {
 }
 
 func (m *smcpv2mutator) SetTracingType(value v2.TracerType) {
-	m.patches = append(m.patches, jsonpatch.NewPatch("add", "/spec/tracing/type", string(value)))
+	tracing := m.smcp.Spec.Tracing
+
+	if tracing == nil {
+		tracing = &v2.TracingConfig{}
+
+	}
+	tracing.Type = value
+	m.patches = append(m.patches, jsonpatch.NewPatch("add", "/spec/tracing", *tracing))
 }
